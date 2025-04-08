@@ -22,7 +22,7 @@ A lightweight web application for sending emails to recipients specified in a CS
 
 1. Clone this repository or download the files:
    ```
-   git clone https://github.com/yourusername/mass-mail-dispatcher.git
+   git clone https://github.com/sathwikshetty0/mail_dispather.git
    ```
 
 2. Open `index.html` in a text editor and update the EmailJS configuration:
