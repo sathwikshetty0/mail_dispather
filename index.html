@@ -812,7 +812,7 @@
                         document.getElementById('progressFill').classList.add('success-animation');
                         
                         // Show success toast
-                        showToast(`Email sent successfully to ${recipientEmail}`, true);
+                        showToast("Email sent successfully to all");
                         
                         // Add a completion button after success
                         setTimeout(() => {
@@ -824,7 +824,7 @@
                         document.getElementById('progressText').textContent = 'Failed to send email.'; 
                         
                         // Show error toast
-                        showToast(`Failed to send email to ${recipientEmail}`, false);
+                        showToast("Failed to send email to all");
                         
                         // Reset state after error
                         setTimeout(() => {
