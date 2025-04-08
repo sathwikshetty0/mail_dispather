@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Base styles */
+        /* Your existing CSS remains unchanged */
         * {
             margin: 0;
             padding: 0;
@@ -33,7 +33,6 @@
             margin: 0 auto;
         }
 
-        /* Card styles */
         .card {
             background-color: white;
             border-radius: 16px;
@@ -92,7 +91,6 @@
             opacity: 0.9;
         }
 
-        /* Form styles */
         form {
             padding: 30px;
         }
@@ -137,7 +135,6 @@
             resize: vertical;
         }
 
-        /* Form layout */
         .form-layout {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -149,7 +146,6 @@
             grid-column: 1 / 3;
         }
 
-        /* Custom file input */
         .file-upload {
             margin-bottom: 0;
         }
@@ -205,7 +201,6 @@
             margin-top: 5px;
         }
 
-        /* Email stats section */
         .email-stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -265,7 +260,6 @@
             color: #dc2626;
         }
 
-        /* Button styles */
         .send-button {
             display: block;
             width: 100%;
@@ -329,7 +323,6 @@
             height: 20px;
         }
 
-        /* Sending status section */
         .sending-status {
             display: none;
             margin-top: 30px;
@@ -378,7 +371,6 @@
             padding-left: 5px;
         }
 
-        /* Responsive styles */
         @media (max-width: 768px) {
             .form-layout {
                 grid-template-columns: 1fr;
@@ -404,7 +396,6 @@
             }
         }
 
-        /* Animation for success state */
         @keyframes success-pulse {
             0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
             70% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
@@ -415,7 +406,6 @@
             animation: success-pulse 1.5s infinite;
         }
 
-        /* Toast notification */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -482,7 +472,6 @@
             color: #64748b;
         }
 
-        /* Custom scrollbar */
         .email-list::-webkit-scrollbar {
             width: 6px;
         }
@@ -586,7 +575,7 @@
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill"></div>
                     </div>
-                    <p id="progressText" class="progress-text">Preparing to send email...</p>
+                    <p id="progressText" class="progress-text">Preparing to send emails...</p>
                 </div>
             </form>
         </div>
@@ -601,7 +590,7 @@
         </div>
         <div class="toast-content">
             <h4 class="toast-title">Success!</h4>
-            <p class="toast-message" id="toastMessage">Email has been sent successfully.</p>
+            <p class="toast-message" id="toastMessage">Emails sent successfully.</p>
         </div>
         <button class="toast-close" id="toastClose">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -614,11 +603,11 @@
     <script>
         // Global flag to prevent multiple sends
         let isProcessing = false;
-      
+
         // Wait for DOM to fully load before adding event listeners
         document.addEventListener('DOMContentLoaded', function() {
             console.log("DOM fully loaded");
-          
+            
             // Handle CSV file selection
             document.getElementById("csvFile").addEventListener("change", function(e) {
                 const fileName = this.files[0]?.name || "Choose a CSV file";
@@ -632,15 +621,15 @@
                 document.getElementById("csvFile").click();
             });
             
-            // Handle send button click with single event listener
+            // Handle send button click
             document.getElementById("sendButton").addEventListener("click", function(e) {
                 e.preventDefault();
                 console.log("Send button clicked");
                 
-                // Show sending status only when send button is clicked
+                // Show sending status
                 document.getElementById("sendingStatus").style.display = "block";
                 
-                sendEmailOnce();
+                sendEmails();
             });
             
             // Prevent form submission
@@ -690,45 +679,37 @@
                 document.getElementById("invalidEmailCount").innerText = "(" + invalidEmails.length + ")";
             };
         }
-      
+        
         // Show toast notification
         function showToast(message, isSuccess = true) {
             const toast = document.getElementById("toast");
             const toastMessage = document.getElementById("toastMessage");
             
-            // Set message
             toastMessage.textContent = message;
             
-            // Set toast style based on success/error
             if (isSuccess) {
-                toast.style.borderLeftColor = "#10b981"; // Success green
+                toast.style.borderLeftColor = "#10b981";
                 document.querySelector(".toast-icon svg").setAttribute("stroke", "#10b981");
                 document.querySelector(".toast-title").textContent = "Success!";
             } else {
-                toast.style.borderLeftColor = "#ef4444"; // Error red
+                toast.style.borderLeftColor = "#ef4444";
                 document.querySelector(".toast-icon svg").setAttribute("stroke", "#ef4444");
                 document.querySelector(".toast-title").textContent = "Error";
-                // Change icon to X for error
                 document.querySelector(".toast-icon svg").innerHTML = '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>';
             }
             
-            // Show the toast
             toast.classList.add("show");
-            
-            // Auto hide after 5 seconds
             setTimeout(() => {
                 toast.classList.remove("show");
             }, 5000);
         }
 
-        // Send only one email - modified from the original function
-        function sendEmailOnce() {
-            // Prevent multiple sends
+        // Send emails to all valid recipients
+        async function sendEmails() {
             if (isProcessing) {
                 console.log("Already processing. Send prevented.");
                 return;
             }
-            
             console.log("Starting send process");
             isProcessing = true;
             
@@ -763,7 +744,7 @@
                 resetState();
             };
             
-            reader.onload = function(event) {
+            reader.onload = async function(event) {
                 const csv = event.target.result;
                 const lines = csv.split('\n');
                 const validEmails = [];
@@ -785,52 +766,41 @@
                     return;
                 }
                 
-                // Update progress display - just sending 1 email
-                document.getElementById("progressText").textContent = "Sending email...";
+                const total = validEmails.length;
+                let sentCount = 0;
+                let failedCount = 0;
                 
-                // Only send to the first valid email
-                const recipientEmail = validEmails[0];
-                console.log(`Sending email to: ${recipientEmail}`);
+                // Send email to each valid recipient
+                for (const email of validEmails) {
+                    try {
+                        const templateParams = {
+                            to_email: email,
+                            from_name: senderEmail,
+                            message_html: message,
+                            subject: subject
+                        };
+                        await emailjs.send('service_rb4us0n', 'template_81mzknr', templateParams);
+                        sentCount++;
+                    } catch (error) {
+                        console.error(`Failed to send email to ${email}:`, error);
+                        failedCount++;
+                    }
+                    // Update progress
+                    const completed = sentCount + failedCount;
+                    const percentage = (completed / total) * 100;
+                    document.getElementById('progressFill').style.width = `${percentage}%`;
+                    document.getElementById('progressText').textContent = `Sending emails: ${completed}/${total} (Sent: ${sentCount}, Failed: ${failedCount})`;
+                }
                 
-                // Create template parameters
-                const templateParams = {
-                    to_email: recipientEmail,
-                    from_name: senderEmail,
-                    message_html: message,
-                    subject: subject
-                };
-                
-                // Update progress bar to show "in progress"
-                document.getElementById('progressFill').style.width = '50%';
-                
-                // Send email
-                emailjs.send('service_rb4us0n', 'template_81mzknr', templateParams)
-                    .then(function(response) {
-                        console.log(`Email sent successfully to:all`, response.status);
-                        document.getElementById('progressFill').style.width = '100%';
-                        document.getElementById('progressText').textContent = 'Email sent successfully!';
-                        document.getElementById('progressFill').classList.add('success-animation');
-                        
-                        // Show success toast
-                        showToast("Email sent successfully to all");
-                        
-                        // Add a completion button after success
-                        setTimeout(() => {
-                            resetState();
-                        }, 3000);
-                    }, function(error) {
-                        console.error("Failed to send email to all");
-                        document.getElementById('progressFill').style.width = '100%';
-                        document.getElementById('progressText').textContent = 'Failed to send email.'; 
-                        
-                        // Show error toast
-                        showToast("Failed to send email to all");
-                        
-                        // Reset state after error
-                        setTimeout(() => {
-                            resetState();
-                        }, 3000);
-                    });
+                // All emails processed
+                document.getElementById('progressFill').style.width = '100%';
+                document.getElementById('progressText').textContent = `Completed: Sent ${sentCount}, Failed ${failedCount}`;
+                if (failedCount === 0) {
+                    showToast(`All ${sentCount} emails sent successfully`);
+                } else {
+                    showToast(`Emails sent: ${sentCount} successful, ${failedCount} failed`);
+                }
+                setTimeout(resetState, 3000);
             };
         }
         
