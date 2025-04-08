@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mass Mail Dispatcher</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1>Mass Mail Dispatcher</h1>
+                <p class="subtitle">Send emails to multiple recipients at once</p>
+            </div>
+
+            <form method="post">
+                <div class="form-group">
+                    <label for="senderEmail">From</label>
+                    <input type="email" id="senderEmail" name="senderEmail" placeholder="your@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" placeholder="Email subject" required>
+                </div>
+
+                <div class="form-group file-upload">
+                    <label for="csvFile">Recipient List (CSV)</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
+                        <span class="file-input-text">Choose a CSV file</span>
+                        <button type="button" class="file-input-button">Browse</button>
+                    </div>
+                    <p class="hint">Upload a CSV with one email address per line</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" placeholder="Type your message here..." required></textarea>
+                </div>
+
+                <button type="button" class="send-button" onclick="sendEmails()">
+                    <span class="button-text">Send Emails</span>
+                </button>
+
+                <div class="email-stats">
+                    <div class="stats-box">
+                        <div class="stats-header">
+                            <h3>Valid Emails</h3>
+                            <span class="badge" id="validEmailCount">(0)</span>
+                        </div>
+                        <div class="email-list" id="validEmails"></div>
+                    </div>
+                    
+                    <div class="stats-box">
+                        <div class="stats-header">
+                            <h3>Invalid Emails</h3>
+                            <span class="badge" id="invalidEmailCount">(0)</span>
+                        </div>
+                        <div class="email-list" id="invalidEmails"></div>
+                    </div>
+                </div>
+                
+                <div id="sendingStatus" class="sending-status">
+                    <h3>Email Sending Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p id="progressText" class="progress-text">Preparing to send emails...</p>
+                    <div class="send-log" id="sendLog"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script type="text/javascript">
+        (function(){
+            emailjs.init('2r0FxFenBnmeDa7Do'); // Your EmailJS public key
+        })();
+      
+        // Update file input display when file is selected
+        document.getElementById("csvFile").addEventListener("change", function() {
+            const fileName = this.files[0]?.name || "Choose a CSV file";
+            document.querySelector(".file-input-text").textContent = fileName;
+            
+            processCSVFile();
+        });
+        
+        // Trigger file input when custom button is clicked
+        document.querySelector(".file-input-button").addEventListener("click", function() {
+            document.getElementById("csvFile").click();
+        });
+
+        function processCSVFile() {
+            var validEmails = [];
+            var invalidEmails = [];
+            
+            // Read contents of CSV file
+            var file = document.getElementById("csvFile").files[0];
+            if (!file) return;
+            
+            var reader = new FileReader();
+            reader.readAsText(file);
+            reader.onload = function(event) {
+                var csv = event.target.result;
+                var lines = csv.split('\n');
+                for (var i = 0; i < lines.length; i++) {
+                    var email = lines[i].trim();
+                    var emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+                    if (emailRegex.test(email)) {
+                        validEmails.push(email);
+                    } else if (email !== "") {
+                        invalidEmails.push(email);
+                    }
+                }
+                
+                // Display valid and invalid emails
+                document.getElementById("validEmails").innerHTML = validEmails.map(email => 
+                    `<div class="email-item"><span class="email-address">${email}</span></div>`).join("");
+                document.getElementById("invalidEmails").innerHTML = invalidEmails.map(email => 
+                    `<div class="email-item invalid"><span class="email-address">${email}</span></div>`).join("");
+                document.getElementById("validEmailCount").innerText = "(" + validEmails.length + ")";
+                document.getElementById("invalidEmailCount").innerText = "(" + invalidEmails.length + ")";
+            };
+        }
+      
+        function sendEmails() {
+            var senderEmail = document.getElementById("senderEmail").value;
+            var message = document.getElementById("message").value;
+            var subject = document.getElementById("subject").value;
+            var validEmails = [];
+            var invalidEmails = [];
+            var sentCount = 0;
+            var failedCount = 0;
+            
+            // Show sending status
+            document.getElementById("sendingStatus").style.display = "block";
+            document.getElementById("progressText").textContent = "Reading CSV file...";
+            
+            // Read contents of CSV file
+            var file = document.getElementById("csvFile").files[0];
+            if (!file) {
+                alert("Please select a CSV file first.");
+                document.getElementById("sendingStatus").style.display = "none";
+                return;
+            }
+            
+            var reader = new FileReader();
+            reader.readAsText(file);
+            reader.onload = function(event) {
+                var csv = event.target.result;
+                var lines = csv.split('\n');
+                
+                // Process emails
+                for (var i = 0; i < lines.length; i++) {
+                    var email = lines[i].trim();
+                    if (email === "") continue; // Skip empty lines
+                    
+                    var emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+                    if (emailRegex.test(email)) {
+                        validEmails.push(email);
+                    } else if (email !== "") {
+                        invalidEmails.push(email);
+                    }
+                }
+                
+                if (validEmails.length === 0) {
+                    alert("No valid email addresses found in the CSV file.");
+                    document.getElementById("sendingStatus").style.display = "none";
+                    return;
+                }
+                
+                // Update log
+                document.getElementById("progressText").textContent = 
+                    "Sending 0/" + validEmails.length + " emails...";
+                document.getElementById("sendLog").innerHTML = "";
+                
+                // Send emails one by one
+                sendNextEmail(0);
+                
+                function sendNextEmail(index) {
+                    if (index >= validEmails.length) {
+                        // All emails processed
+                        document.getElementById("progressText").textContent = 
+                            "Completed: " + sentCount + " sent successfully, " + failedCount + " failed";
+                        return;
+                    }
+                    
+                    var recipientEmail = validEmails[index];
+                    
+                    // IMPORTANT FIX: Change parameter names to match your template
+                    var templateParams = {
+                        to_email: recipientEmail,
+                        from_name: senderEmail,
+                        message_html: message,
+                        subject: subject
+                    };
+                    
+                    // Update log
+                    var logEntry = document.createElement('div');
+                    logEntry.className = 'log-entry';
+                    logEntry.innerHTML = `<span class="log-email">${recipientEmail}</span><span class="log-status pending">Sending...</span>`;
+                    document.getElementById('sendLog').appendChild(logEntry);
+                    document.getElementById('sendLog').scrollTop = document.getElementById('sendLog').scrollHeight;
+                    
+                    // Send the email with your service and template IDs
+                    emailjs.send('service_rb4us0n', 'template_81mzknr', templateParams)
+                        .then(function(response) {
+                            logEntry.querySelector('.log-status').className = 'log-status success';
+                            logEntry.querySelector('.log-status').textContent = 'Success';
+                            console.log("SUCCESS", response);
+                            sentCount++;
+                            updateProgress();
+                            // Process next email after a short delay
+                            setTimeout(function() {
+                                sendNextEmail(index + 1);
+                            }, 300);
+                        }, function(error) {
+                            logEntry.querySelector('.log-status').className = 'log-status failed';
+                            logEntry.querySelector('.log-status').textContent = 'Failed';
+                            console.log("FAILED", error);
+                            failedCount++;
+                            updateProgress();
+                            // Process next email after a short delay
+                            setTimeout(function() {
+                                sendNextEmail(index + 1);
+                            }, 300);
+                        });
+                }
+                
+                function updateProgress() {
+                    var progress = ((sentCount + failedCount) / validEmails.length) * 100;
+                    document.getElementById('progressFill').style.width = progress + '%';
+                    document.getElementById('progressText').textContent = 
+                        'Sending ' + (sentCount + failedCount) + '/' + validEmails.length + 
+                        ' emails... (' + sentCount + ' sent, ' + failedCount + ' failed)';
+                }
+            };
+        }
+    </script>
+</body>
+</html>
