@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,19 +6,363 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mass Mail Dispatcher</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(120deg, #f6f9fc, #e3f2fd);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Card styles */
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .card-header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Form styles */
+        form {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #444;
+        }
+
+        input[type="email"],
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        input[type="email"]:focus,
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+            background-color: white;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        /* Custom file input */
+        .file-upload {
+            margin-bottom: 25px;
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        input[type="file"] {
+            opacity: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .file-input-text {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px 0 0 8px;
+            background-color: #f9f9f9;
+            color: #777;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-input-button {
+            padding: 12px 20px;
+            background-color: #4facfe;
+            color: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        /* Button styles */
+        .send-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 25px;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .send-button:active {
+            transform: translateY(0);
+        }
+
+        .send-button:disabled {
+            background: linear-gradient(to right, #b8d7e5, #b8e5e2);
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .button-text {
+            position: relative;
+        }
+
+        /* Email stats section */
+        .email-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stats-box {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .stats-header {
+            background-color: #f5f7fa;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stats-header h3 {
+            color: #444;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .badge {
+            background-color: #e0e7ff;
+            color: #4338ca;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .email-list {
+            height: 150px;
+            overflow: auto;
+            padding: 10px 15px;
+        }
+
+        .email-item {
+            padding: 6px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #555;
+        }
+
+        .email-item:last-child {
+            border-bottom: none;
+        }
+
+        .email-item.invalid {
+            color: #e53e3e;
+        }
+
+        /* Sending status section */
+        .sending-status {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            border: 1px solid #eee;
+        }
+
+        .sending-status h3 {
+            margin-bottom: 15px;
+            color: #444;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #edf2f7;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .send-log {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            background-color: white;
+        }
+
+        .log-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-email {
+            color: #555;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 70%;
+        }
+
+        .log-status {
+            font-weight: 500;
+        }
+
+        .log-status.pending {
+            color: #d69e2e;
+        }
+
+        .log-status.success {
+            color: #38a169;
+        }
+
+        .log-status.failed {
+            color: #e53e3e;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .email-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-header {
+                padding: 20px;
+            }
+            
+            form {
+                padding: 20px;
+            }
+        }
+    </style>
+    <script>
+        // Initialize EmailJS only once when the page loads
+        (function() {
+            emailjs.init('2r0FxFenBnmeDa7Do');
+            console.log("EmailJS initialized once");
+        })();
+    </script>
 </head>
 
 <body>
     <div class="container">
         <div class="card">
             <div class="card-header">
-                <h1>Mass Mail Dispatcher</h1>
-                <p class="subtitle">Send emails to multiple recipients at once</p>
+                <h1>Mail Dispatcher</h1>
+                <p class="subtitle">Send one email at a time</p>
             </div>
 
-            <form method="post">
+            <form id="emailForm">
                 <div class="form-group">
                     <label for="senderEmail">From</label>
                     <input type="email" id="senderEmail" name="senderEmail" placeholder="your@email.com" required>
@@ -34,7 +378,7 @@
                     <div class="file-input-wrapper">
                         <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
                         <span class="file-input-text">Choose a CSV file</span>
-                        <button type="button" class="file-input-button">Browse</button>
+                        <button type="button" id="browseButton" class="file-input-button">Browse</button>
                     </div>
                     <p class="hint">Upload a CSV with one email address per line</p>
                 </div>
@@ -43,10 +387,6 @@
                     <label for="message">Message</label>
                     <textarea id="message" name="message" placeholder="Type your message here..." required></textarea>
                 </div>
-
-                <button type="button" class="send-button" onclick="sendEmails()">
-                    <span class="button-text">Send Emails</span>
-                </button>
 
                 <div class="email-stats">
                     <div class="stats-box">
@@ -65,53 +405,80 @@
                         <div class="email-list" id="invalidEmails"></div>
                     </div>
                 </div>
+
+                <button type="button" id="sendButton" class="send-button">
+                    <span class="button-text">Send Email</span>
+                </button>
                 
                 <div id="sendingStatus" class="sending-status">
                     <h3>Email Sending Progress</h3>
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill"></div>
                     </div>
-                    <p id="progressText" class="progress-text">Preparing to send emails...</p>
-                    <div class="send-log" id="sendLog"></div>
+                    <p id="progressText" class="progress-text">Preparing to send email...</p>
                 </div>
             </form>
         </div>
     </div>
     
-    <script type="text/javascript">
-        (function(){
-            emailjs.init('2r0FxFenBnmeDa7Do'); // Your EmailJS public key
-        })();
+    <script>
+        // Global flag to prevent multiple sends
+        let isProcessing = false;
       
-        // Update file input display when file is selected
-        document.getElementById("csvFile").addEventListener("change", function() {
-            const fileName = this.files[0]?.name || "Choose a CSV file";
-            document.querySelector(".file-input-text").textContent = fileName;
+        // Wait for DOM to fully load before adding event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM fully loaded");
+          
+            // Handle CSV file selection
+            document.getElementById("csvFile").addEventListener("change", function(e) {
+                const fileName = this.files[0]?.name || "Choose a CSV file";
+                document.querySelector(".file-input-text").textContent = fileName;
+                processCSVFile();
+            });
             
-            processCSVFile();
+            // Handle browse button click
+            document.getElementById("browseButton").addEventListener("click", function(e) {
+                e.preventDefault();
+                document.getElementById("csvFile").click();
+            });
+            
+            // Handle send button click with single event listener
+            document.getElementById("sendButton").addEventListener("click", function(e) {
+                e.preventDefault();
+                console.log("Send button clicked");
+                
+                // Show sending status only when send button is clicked
+                document.getElementById("sendingStatus").style.display = "block";
+                
+                sendEmailOnce();
+            });
+            
+            // Prevent form submission
+            document.getElementById("emailForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                console.log("Form submission prevented");
+                return false;
+            });
         });
         
-        // Trigger file input when custom button is clicked
-        document.querySelector(".file-input-button").addEventListener("click", function() {
-            document.getElementById("csvFile").click();
-        });
-
+        // Process the CSV file to validate emails
         function processCSVFile() {
-            var validEmails = [];
-            var invalidEmails = [];
-            
-            // Read contents of CSV file
-            var file = document.getElementById("csvFile").files[0];
+            const file = document.getElementById("csvFile").files[0];
             if (!file) return;
             
-            var reader = new FileReader();
+            const reader = new FileReader();
             reader.readAsText(file);
             reader.onload = function(event) {
-                var csv = event.target.result;
-                var lines = csv.split('\n');
-                for (var i = 0; i < lines.length; i++) {
-                    var email = lines[i].trim();
-                    var emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+                const csv = event.target.result;
+                const lines = csv.split('\n');
+                const validEmails = [];
+                const invalidEmails = [];
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const email = lines[i].trim();
+                    if (email === "") continue;
+                    
+                    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
                     if (emailRegex.test(email)) {
                         validEmails.push(email);
                     } else if (email !== "") {
@@ -129,39 +496,803 @@
             };
         }
       
-        function sendEmails() {
-            var senderEmail = document.getElementById("senderEmail").value;
-            var message = document.getElementById("message").value;
-            var subject = document.getElementById("subject").value;
-            var validEmails = [];
-            var invalidEmails = [];
-            var sentCount = 0;
-            var failedCount = 0;
-            
-            // Show sending status
-            document.getElementById("sendingStatus").style.display = "block";
-            document.getElementById("progressText").textContent = "Reading CSV file...";
-            
-            // Read contents of CSV file
-            var file = document.getElementById("csvFile").files[0];
-            if (!file) {
-                alert("Please select a CSV file first.");
-                document.getElementById("sendingStatus").style.display = "none";
+        // Send only one email - modified from the original function
+        function sendEmailOnce() {
+            // Prevent multiple sends
+            if (isProcessing) {
+                console.log("Already processing. Send prevented.");
                 return;
             }
             
-            var reader = new FileReader();
+            console.log("Starting send process");
+            isProcessing = true;
+            
+            // Disable send button
+            const sendButton = document.getElementById('sendButton');
+            sendButton.disabled = true;
+            sendButton.innerHTML = '<span class="button-text">Sending...</span>';
+            
+            // Get form data
+            const senderEmail = document.getElementById("senderEmail").value;
+            const message = document.getElementById("message").value;
+            const subject = document.getElementById("subject").value;
+            const file = document.getElementById("csvFile").files[0];
+            
+            // Validate form
+            if (!file) {
+                alert("Please select a CSV file first.");
+                resetState();
+                return;
+            }
+            
+            // Update UI for sending
+            document.getElementById("progressText").textContent = "Reading CSV file...";
+            document.getElementById("progressFill").style.width = "0%";
+            
+            // Process CSV file
+            const reader = new FileReader();
+            reader.readAsText(file);
+            
+            reader.onerror = function() {
+                alert("Error reading the CSV file.");
+                resetState();
+            };
+            
+            reader.onload = function(event) {
+                const csv = event.target.result;
+                const lines = csv.split('\n');
+                const validEmails = [];
+                
+                // Extract valid emails
+                for (let i = 0; i < lines.length; i++) {
+                    const email = lines[i].trim();
+                    if (email === "") continue;
+                    
+                    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+                    if (emailRegex.test(email)) {
+                        validEmails.push(email);
+                    }
+                }
+                
+                if (validEmails.length === 0) {
+                    alert("No valid email addresses found in the CSV file.");
+                    resetState();
+                    return;
+                }
+                
+                // Update progress display - just sending 1 email
+                document.getElementById("progressText").textContent = "Sending email...";
+                
+                // Only send to the first valid email
+                const recipientEmail = validEmails[0];
+                console.log(`Sending email to: ${recipientEmail}`);
+                
+                // Create template parameters
+                const templateParams = {
+                    to_email: recipientEmail,
+                    from_name: senderEmail,
+                    message_html: message,
+                    subject: subject
+                };
+                
+                // Update progress bar to show "in progress"
+                document.getElementById('progressFill').style.width = '50%';
+                
+                // Send email
+                emailjs.send('service_rb4us0n', 'template_81mzknr', templateParams)
+                    .then(function(response) {
+                        console.log(`Email sent successfully to: ${recipientEmail}`, response.status);
+                        document.getElementById('progressFill').style.width = '100%';
+                        document.getElementById('progressText').textContent = 'Email sent successfully to: all recipients';
+                        
+                        // Add a completion button after success
+                        setTimeout(() => {
+                            resetState();
+                        }, 3000);
+                    }, function(error) {
+                        console.error(`Failed to send email to: ${recipientEmail}`, error);
+                        document.getElementById('progressFill').style.width = '100%';
+                        document.getElementById('progressText').textContent = 'Failed to send email to: all recipients'; 
+                        
+                        // Reset state after error
+                        setTimeout(() => {
+                            resetState();
+                        }, 3000);
+                    });
+            };
+        }
+        
+        // Reset application state
+        function resetState() {
+            isProcessing = false;
+            const sendButton = document.getElementById('sendButton');
+            sendButton.disabled = false;
+            sendButton.innerHTML = '<span class="button-text">Send Email</span>';
+            document.getElementById("sendingStatus").style.display = "none";
+        }
+    </script>
+</body>
+</html> -->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mass Mail Dispatcher</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Card styles */
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #4338ca, #6366f1);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::before {
+            content: "";
+            position: absolute;
+            top: -10%;
+            right: -10%;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+        }
+
+        .card-header::after {
+            content: "";
+            position: absolute;
+            bottom: -10%;
+            left: -10%;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Form styles */
+        form {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        input[type="email"],
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #1e293b;
+            transition: all 0.2s ease;
+        }
+
+        input[type="email"]:focus,
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+            background-color: white;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        /* Form layout */
+        .form-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-layout .form-group:nth-child(3),
+        .form-layout .form-group:nth-child(4) {
+            grid-column: 1 / 3;
+        }
+
+        /* Custom file input */
+        .file-upload {
+            margin-bottom: 0;
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        input[type="file"] {
+            opacity: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .file-input-text {
+            flex-grow: 1;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px 0 0 8px;
+            background-color: #f8fafc;
+            color: #64748b;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+        .file-input-button {
+            padding: 12px 20px;
+            background-color: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            font-weight: 500;
+            white-space: nowrap;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+
+        .file-input-button:hover {
+            background-color: #4f46e5;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        /* Email stats section */
+        .email-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stats-box {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+
+        .stats-header {
+            background-color: #f1f5f9;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .stats-header h3 {
+            color: #334155;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .badge {
+            background-color: #e0e7ff;
+            color: #4338ca;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .email-list {
+            height: 150px;
+            overflow: auto;
+            padding: 10px 15px;
+        }
+
+        .email-item {
+            padding: 6px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #475569;
+        }
+
+        .email-item:last-child {
+            border-bottom: none;
+        }
+
+        .email-item.invalid {
+            color: #dc2626;
+        }
+
+        /* Button styles */
+        .send-button {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #4338ca, #6366f1);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .send-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s;
+        }
+
+        .send-button:hover::before {
+            left: 100%;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .send-button:active {
+            transform: translateY(0);
+        }
+
+        .send-button:disabled {
+            background: linear-gradient(135deg, #94a3b8, #cbd5e1);
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .button-text {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .button-text svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Sending status section */
+        .sending-status {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .sending-status h3 {
+            margin-bottom: 15px;
+            color: #334155;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #4338ca, #6366f1);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #475569;
+            margin-bottom: 15px;
+            padding-left: 5px;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .form-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-layout .form-group:nth-child(1),
+            .form-layout .form-group:nth-child(2),
+            .form-layout .form-group:nth-child(3),
+            .form-layout .form-group:nth-child(4) {
+                grid-column: 1;
+            }
+            
+            .email-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-header {
+                padding: 20px;
+            }
+            
+            form {
+                padding: 20px;
+            }
+        }
+
+        /* Animation for success state */
+        @keyframes success-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+        }
+
+        .success-animation {
+            animation: success-pulse 1.5s infinite;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 9999;
+            border-left: 4px solid #10b981;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            background-color: #ecfdf5;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .toast-message {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #94a3b8;
+            padding: 5px;
+            margin: -5px;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        .toast-close:hover {
+            color: #64748b;
+        }
+
+        /* Custom scrollbar */
+        .email-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .email-list::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        .email-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .email-list::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+    <script>
+        // Initialize EmailJS only once when the page loads
+        (function() {
+            emailjs.init('2r0FxFenBnmeDa7Do');
+            console.log("EmailJS initialized once");
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <div class="header-content">
+                    <h1>Mail Dispatcher</h1>
+                    <p class="subtitle">make your work easy</p>
+                </div>
+            </div>
+
+            <form id="emailForm">
+                <div class="form-layout">
+                    <div class="form-group">
+                        <label for="senderEmail">From</label>
+                        <input type="email" id="senderEmail" name="senderEmail" placeholder="your@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" placeholder="Email subject" required>
+                    </div>
+
+                    <div class="form-group file-upload">
+                        <label for="csvFile">Recipient List (CSV)</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
+                            <span class="file-input-text">Choose a CSV file</span>
+                            <button type="button" id="browseButton" class="file-input-button">Browse</button>
+                        </div>
+                        <p class="hint">Upload a CSV with one email address per line</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" placeholder="Type your message here..." required></textarea>
+                    </div>
+                </div>
+
+                <div class="email-stats">
+                    <div class="stats-box">
+                        <div class="stats-header">
+                            <h3>Valid Emails</h3>
+                            <span class="badge" id="validEmailCount">(0)</span>
+                        </div>
+                        <div class="email-list" id="validEmails"></div>
+                    </div>
+                    
+                    <div class="stats-box">
+                        <div class="stats-header">
+                            <h3>Invalid Emails</h3>
+                            <span class="badge" id="invalidEmailCount">(0)</span>
+                        </div>
+                        <div class="email-list" id="invalidEmails"></div>
+                    </div>
+                </div>
+
+                <button type="button" id="sendButton" class="send-button">
+                    <span class="button-text">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                        Send Email
+                    </span>
+                </button>
+                
+                <div id="sendingStatus" class="sending-status">
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                        Email Sending Progress
+                    </h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p id="progressText" class="progress-text">Preparing to send email...</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div class="toast-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+        <div class="toast-content">
+            <h4 class="toast-title">Success!</h4>
+            <p class="toast-message" id="toastMessage">Email has been sent successfully.</p>
+        </div>
+        <button class="toast-close" id="toastClose">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+    
+    <script>
+        // Global flag to prevent multiple sends
+        let isProcessing = false;
+      
+        // Wait for DOM to fully load before adding event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM fully loaded");
+          
+            // Handle CSV file selection
+            document.getElementById("csvFile").addEventListener("change", function(e) {
+                const fileName = this.files[0]?.name || "Choose a CSV file";
+                document.querySelector(".file-input-text").textContent = fileName;
+                processCSVFile();
+            });
+            
+            // Handle browse button click
+            document.getElementById("browseButton").addEventListener("click", function(e) {
+                e.preventDefault();
+                document.getElementById("csvFile").click();
+            });
+            
+            // Handle send button click with single event listener
+            document.getElementById("sendButton").addEventListener("click", function(e) {
+                e.preventDefault();
+                console.log("Send button clicked");
+                
+                // Show sending status only when send button is clicked
+                document.getElementById("sendingStatus").style.display = "block";
+                
+                sendEmailOnce();
+            });
+            
+            // Prevent form submission
+            document.getElementById("emailForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                console.log("Form submission prevented");
+                return false;
+            });
+
+            // Handle toast close button
+            document.getElementById("toastClose").addEventListener("click", function() {
+                document.getElementById("toast").classList.remove("show");
+            });
+        });
+        
+        // Process the CSV file to validate emails
+        function processCSVFile() {
+            const file = document.getElementById("csvFile").files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
             reader.readAsText(file);
             reader.onload = function(event) {
-                var csv = event.target.result;
-                var lines = csv.split('\n');
+                const csv = event.target.result;
+                const lines = csv.split('\n');
+                const validEmails = [];
+                const invalidEmails = [];
                 
-                // Process emails
-                for (var i = 0; i < lines.length; i++) {
-                    var email = lines[i].trim();
-                    if (email === "") continue; // Skip empty lines
+                for (let i = 0; i < lines.length; i++) {
+                    const email = lines[i].trim();
+                    if (email === "") continue;
                     
-                    var emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+                    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
                     if (emailRegex.test(email)) {
                         validEmails.push(email);
                     } else if (email !== "") {
@@ -169,78 +1300,167 @@
                     }
                 }
                 
+                // Display valid and invalid emails
+                document.getElementById("validEmails").innerHTML = validEmails.map(email => 
+                    `<div class="email-item"><span class="email-address">${email}</span></div>`).join("");
+                document.getElementById("invalidEmails").innerHTML = invalidEmails.map(email => 
+                    `<div class="email-item invalid"><span class="email-address">${email}</span></div>`).join("");
+                document.getElementById("validEmailCount").innerText = "(" + validEmails.length + ")";
+                document.getElementById("invalidEmailCount").innerText = "(" + invalidEmails.length + ")";
+            };
+        }
+      
+        // Show toast notification
+        function showToast(message, isSuccess = true) {
+            const toast = document.getElementById("toast");
+            const toastMessage = document.getElementById("toastMessage");
+            
+            // Set message
+            toastMessage.textContent = message;
+            
+            // Set toast style based on success/error
+            if (isSuccess) {
+                toast.style.borderLeftColor = "#10b981"; // Success green
+                document.querySelector(".toast-icon svg").setAttribute("stroke", "#10b981");
+                document.querySelector(".toast-title").textContent = "Success!";
+            } else {
+                toast.style.borderLeftColor = "#ef4444"; // Error red
+                document.querySelector(".toast-icon svg").setAttribute("stroke", "#ef4444");
+                document.querySelector(".toast-title").textContent = "Error";
+                // Change icon to X for error
+                document.querySelector(".toast-icon svg").innerHTML = '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>';
+            }
+            
+            // Show the toast
+            toast.classList.add("show");
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 5000);
+        }
+
+        // Send only one email - modified from the original function
+        function sendEmailOnce() {
+            // Prevent multiple sends
+            if (isProcessing) {
+                console.log("Already processing. Send prevented.");
+                return;
+            }
+            
+            console.log("Starting send process");
+            isProcessing = true;
+            
+            // Disable send button
+            const sendButton = document.getElementById('sendButton');
+            sendButton.disabled = true;
+            sendButton.innerHTML = '<span class="button-text"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Sending...</span>';
+            
+            // Get form data
+            const senderEmail = document.getElementById("senderEmail").value;
+            const message = document.getElementById("message").value;
+            const subject = document.getElementById("subject").value;
+            const file = document.getElementById("csvFile").files[0];
+            
+            // Validate form
+            if (!file) {
+                showToast("Please select a CSV file first.", false);
+                resetState();
+                return;
+            }
+            
+            // Update UI for sending
+            document.getElementById("progressText").textContent = "Reading CSV file...";
+            document.getElementById("progressFill").style.width = "0%";
+            
+            // Process CSV file
+            const reader = new FileReader();
+            reader.readAsText(file);
+            
+            reader.onerror = function() {
+                showToast("Error reading the CSV file.", false);
+                resetState();
+            };
+            
+            reader.onload = function(event) {
+                const csv = event.target.result;
+                const lines = csv.split('\n');
+                const validEmails = [];
+                
+                // Extract valid emails
+                for (let i = 0; i < lines.length; i++) {
+                    const email = lines[i].trim();
+                    if (email === "") continue;
+                    
+                    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+                    if (emailRegex.test(email)) {
+                        validEmails.push(email);
+                    }
+                }
+                
                 if (validEmails.length === 0) {
-                    alert("No valid email addresses found in the CSV file.");
-                    document.getElementById("sendingStatus").style.display = "none";
+                    showToast("No valid email addresses found in the CSV file.", false);
+                    resetState();
                     return;
                 }
                 
-                // Update log
-                document.getElementById("progressText").textContent = 
-                    "Sending 0/" + validEmails.length + " emails...";
-                document.getElementById("sendLog").innerHTML = "";
+                // Update progress display - just sending 1 email
+                document.getElementById("progressText").textContent = "Sending email...";
                 
-                // Send emails one by one
-                sendNextEmail(0);
+                // Only send to the first valid email
+                const recipientEmail = validEmails[0];
+                console.log(`Sending email to: ${recipientEmail}`);
                 
-                function sendNextEmail(index) {
-                    if (index >= validEmails.length) {
-                        // All emails processed
-                        document.getElementById("progressText").textContent = 
-                            "Completed: " + sentCount + " sent successfully, " + failedCount + " failed";
-                        return;
-                    }
-                    
-                    var recipientEmail = validEmails[index];
-                    
-                    // IMPORTANT FIX: Change parameter names to match your template
-                    var templateParams = {
-                        to_email: recipientEmail,
-                        from_name: senderEmail,
-                        message_html: message,
-                        subject: subject
-                    };
-                    
-                    // Update log
-                    var logEntry = document.createElement('div');
-                    logEntry.className = 'log-entry';
-                    logEntry.innerHTML = `<span class="log-email">${recipientEmail}</span><span class="log-status pending">Sending...</span>`;
-                    document.getElementById('sendLog').appendChild(logEntry);
-                    document.getElementById('sendLog').scrollTop = document.getElementById('sendLog').scrollHeight;
-                    
-                    // Send the email with your service and template IDs
-                    emailjs.send('service_rb4us0n', 'template_81mzknr', templateParams)
-                        .then(function(response) {
-                            logEntry.querySelector('.log-status').className = 'log-status success';
-                            logEntry.querySelector('.log-status').textContent = 'Success';
-                            console.log("SUCCESS", response);
-                            sentCount++;
-                            updateProgress();
-                            // Process next email after a short delay
-                            setTimeout(function() {
-                                sendNextEmail(index + 1);
-                            }, 300);
-                        }, function(error) {
-                            logEntry.querySelector('.log-status').className = 'log-status failed';
-                            logEntry.querySelector('.log-status').textContent = 'Failed';
-                            console.log("FAILED", error);
-                            failedCount++;
-                            updateProgress();
-                            // Process next email after a short delay
-                            setTimeout(function() {
-                                sendNextEmail(index + 1);
-                            }, 300);
-                        });
-                }
+                // Create template parameters
+                const templateParams = {
+                    to_email: recipientEmail,
+                    from_name: senderEmail,
+                    message_html: message,
+                    subject: subject
+                };
                 
-                function updateProgress() {
-                    var progress = ((sentCount + failedCount) / validEmails.length) * 100;
-                    document.getElementById('progressFill').style.width = progress + '%';
-                    document.getElementById('progressText').textContent = 
-                        'Sending ' + (sentCount + failedCount) + '/' + validEmails.length + 
-                        ' emails... (' + sentCount + ' sent, ' + failedCount + ' failed)';
-                }
+                // Update progress bar to show "in progress"
+                document.getElementById('progressFill').style.width = '50%';
+                
+                // Send email
+                emailjs.send('service_rb4us0n', 'template_81mzknr', templateParams)
+                    .then(function(response) {
+                        console.log(`Email sent successfully to: ${recipientEmail}`, response.status);
+                        document.getElementById('progressFill').style.width = '100%';
+                        document.getElementById('progressText').textContent = 'Email sent successfully!';
+                        document.getElementById('progressFill').classList.add('success-animation');
+                        
+                        // Show success toast
+                        showToast(`Email sent successfully to ${recipientEmail}`, true);
+                        
+                        // Add a completion button after success
+                        setTimeout(() => {
+                            resetState();
+                        }, 3000);
+                    }, function(error) {
+                        console.error(`Failed to send email to: ${recipientEmail}`, error);
+                        document.getElementById('progressFill').style.width = '100%';
+                        document.getElementById('progressText').textContent = 'Failed to send email.'; 
+                        
+                        // Show error toast
+                        showToast(`Failed to send email to ${recipientEmail}`, false);
+                        
+                        // Reset state after error
+                        setTimeout(() => {
+                            resetState();
+                        }, 3000);
+                    });
             };
+        }
+        
+        // Reset application state
+        function resetState() {
+            isProcessing = false;
+            const sendButton = document.getElementById('sendButton');
+            sendButton.disabled = false;
+            sendButton.innerHTML = '<span class="button-text"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> Send Email</span>';
+            document.getElementById("sendingStatus").style.display = "none";
+            document.getElementById('progressFill').classList.remove('success-animation');
         }
     </script>
 </body>
