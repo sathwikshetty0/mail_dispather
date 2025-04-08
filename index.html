@@ -806,7 +806,7 @@
                 // Send email
                 emailjs.send('service_rb4us0n', 'template_81mzknr', templateParams)
                     .then(function(response) {
-                        console.log(`Email sent successfully to: ${recipientEmail}`, response.status);
+                        console.log(`Email sent successfully to:all`, response.status);
                         document.getElementById('progressFill').style.width = '100%';
                         document.getElementById('progressText').textContent = 'Email sent successfully!';
                         document.getElementById('progressFill').classList.add('success-animation');
@@ -819,7 +819,7 @@
                             resetState();
                         }, 3000);
                     }, function(error) {
-                        console.error(`Failed to send email to: ${recipientEmail}`, error);
+                        console.error("Failed to send email to all");
                         document.getElementById('progressFill').style.width = '100%';
                         document.getElementById('progressText').textContent = 'Failed to send email.'; 
                         
